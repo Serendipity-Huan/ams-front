@@ -13,7 +13,7 @@
         ></el-input>
       </el-form-item>
       <el-form-item>
-        <el-select v-model="filterStatus" clearable placeholder="筛选审核状态">
+        <el-select v-model="filterStatus" clearable placeholder="审核状态">
           <el-option
             v-for="item in filterableStatus"
             :key="item.value"
@@ -22,16 +22,15 @@
           >
           </el-option>
         </el-select>
-        <el-button @click="getDataList()">查询</el-button>
+        <el-button @click="getDataList()" type="success" style="margin-left: 100px">查询</el-button>
         <el-button
-          v-if="isAuth('basic:auditdetail:pass')"
-          type="success"
+          type="primary"
+          style="margin-left: 50px"
           @click="auditPass()"
           :disabled="dataListSelections.length <= 0"
           >批量通过</el-button
         >
         <el-button
-          v-if="isAuth('basic:auditdetail:notpass')"
           type="danger"
           @click="auditNotPass()"
           :disabled="dataListSelections.length <= 0"
@@ -269,9 +268,9 @@ export default {
         }
       ).then(() => {
         this.$http({
-          url: this.$http.adornUrl("/basic/auditdetail/audit-pass"),
+          url: this.$http.adornUrl("/sys/feign/audit-pass"),
           method: "post",
-          data: this.$http.adornData(ids, false)
+          data: this.$http.adornData({'ids': ids})
         }).then(({ data }) => {
           if (data && data.code === 0) {
             this.$message({
@@ -305,9 +304,9 @@ export default {
         }
       ).then(() => {
         this.$http({
-          url: this.$http.adornUrl("/basic/auditdetail/audit-not-pass"),
+          url: this.$http.adornUrl("/sys/feign/audit-not-pass"),
           method: "post",
-          data: this.$http.adornData(ids, false)
+          data: this.$http.adornData({'ids': ids})
         }).then(({ data }) => {
           if (data && data.code === 0) {
             this.$message({

@@ -1,13 +1,13 @@
 <template>
   <div class="mod-demo-echarts">
-    <el-alert
+    <!-- <el-alert
       title="提示："
       type="warning"
       :closable="false">
       <div slot-scope="description">
         <p class="el-alert__description">1. 此Demo只提供ECharts官方使用文档，入门部署和体验功能。具体使用请参考：http://echarts.baidu.com/index.html</p>
       </div>
-    </el-alert>
+    </el-alert> -->
 
     <el-form :model="dataForm">
       <el-row :gutter="20">
@@ -79,9 +79,9 @@
         </div>
       </el-row>
 
-      <el-form-item style="margin-top: 50px">
-        <el-button type="warning" @click="conditionQuery()">查询</el-button>
-        <el-button type="success" @click="exports" style="margin-left: 50px">导出数据</el-button>
+      <el-form-item style="margin-top: 20px">
+        <el-button type="success" @click="conditionQuery()">查询</el-button>
+        <el-button type="warning" @click="exports()" style="margin-left: 50px">将勾选数据导出为excel</el-button>
       </el-form-item>
     </el-form>
     <el-table
@@ -168,6 +168,12 @@
         :formatter="formatGraduationTime">
       </el-table-column>
       <el-table-column
+        prop="major"
+        header-align="center"
+        align="center"
+        label="专业">
+      </el-table-column>
+      <el-table-column
         prop="degreeStage"
         header-align="center"
         align="center"
@@ -205,6 +211,12 @@
         header-align="center"
         align="center"
         label="企业性质">
+      </el-table-column>
+      <el-table-column
+        prop="email"
+        header-align="center"
+        align="center"
+        label="邮箱">
       </el-table-column>
       <el-table-column
         prop="note"
@@ -1475,24 +1487,24 @@ export default {
         })
       }
       let loading = Loading.service({
-        text: '小主，请您稍等片刻，女家正在玩命处理中...',
+        text: '请您稍等片刻，正在玩命处理中...',
         background: 'rgba(0,0,0,.5)'
       })
       let arr = this.dataListSelections.map(item => {
         return {
-          编号: item.id,
+          // 编号: item.id,
           姓名: item.aluName,
           学号: item.aluId,
-          性别: item.gender === 0 ? '女' : '男',
+          性别: item.gender === 0 ? '男' : '女',
           身份证号: item.idCard,
           民族: item.nationality,
           政治面貌: item.politicalStatus,
           籍贯: item.nativePlace,
           班级: item.clazz,
-          入学时间: item.admissionTime,
-          毕业时间: item.graduationTime,
+          入学时间: this.formatExportDate(item.admissionTime), // 把yyyy-mm-dd转换为yyyy/m/d格式
+          毕业时间: this.formatExportDate(item.graduationTime), // 把yyyy-mm-dd转换为yyyy/m/d格式
           专业: item.major,
-          阶段: item.degreeStage === 0 ? '本科' : item.degreeStage === 1 ? '研究生' : '博士',
+          '阶段（本科or硕士\nor博士）': item.degreeStage === 0 ? '本科' : item.degreeStage === 1 ? '硕士' : '博士',
           手机: item.phoneNum,
           所在城市: item.city,
           工作单位: item.workUnit,
@@ -1505,13 +1517,23 @@ export default {
       let sheet = xlsx.utils.json_to_sheet(arr)
       let book = xlsx.utils.book_new()
       xlsx.utils.book_append_sheet(book, sheet, 'sheet1')
-      let fileName = `user${new Date().getTime()}.xls`
+      let fileName = `user${new Date().getTime()}.xlsx`
 
-// 将文件保存到本地
+      // 将文件保存到本地
       xlsx.writeFile(book, fileName)
 
       loading.close()
     },
+    
+    // 将导出excel的日期格式从yyyy-mm-dd转换为yyyy/m/d，注意该函数的输入输出都是字符串
+    formatExportDate(dateString) {
+      var date = new Date(dateString);
+      var year = date.getFullYear();
+      var month = date.getMonth() + 1;
+      var day = date.getDate();
+      return year + '/' + month + '/' + day;
+    },
+
     concatenateNativePlace (nativePlace) {
       if (!Array.isArray(nativePlace)) {
         return ''
@@ -1543,7 +1565,7 @@ export default {
       this.dataForm.page = this.pageIndex
       this.dataForm.limit = this.pageSize
       this.$http({
-        url: this.$http.adornUrl('/basic/alumnusbasic/alumniData'),
+        url: this.$http.adornUrl('/sys/feign/alumniData'),
         method: 'post',
         data: this.$http.adornData(this.dataForm, false)
       }).then(({data}) => {

@@ -1,10 +1,11 @@
 <template>
   <div class="mod-config">
     <el-card class="box-card">
-      信息
+      个人信息
     </el-card>
     <el-table
       :data="dataList"
+      stripe
       border
       v-loading="dataListLoading"
       style="width: 100%"
@@ -13,7 +14,7 @@
         prop="id"
         header-align="center"
         align="center"
-        label="id"
+        label="系统id"
       >
       </el-table-column>
       <el-table-column
@@ -36,6 +37,9 @@
         align="center"
         label="性别"
       >
+        <template slot-scope="scope">
+          {{ scope.row.gender === 0 ? "男" : "女" }}
+        </template>
       </el-table-column>
       <el-table-column
         prop="idCard"
@@ -84,6 +88,7 @@
         header-align="center"
         align="center"
         label="入学时间"
+        :formatter="formatTime"
       >
       </el-table-column>
       <el-table-column
@@ -91,6 +96,7 @@
         header-align="center"
         align="center"
         label="毕业时间"
+        :formatter="formatTime"
       >
       </el-table-column>
       <el-table-column
@@ -106,6 +112,17 @@
         align="center"
         label="阶段"
       >
+        <template slot-scope="scope">
+          {{
+            scope.row.degreeStage === 0
+              ? "本科"
+              : scope.row.degreeStage === 1
+              ? "硕士"
+              : scope.row.degreeStage === 2
+              ? "博士"
+              : "未知"
+          }}
+        </template>
       </el-table-column>
       <el-table-column
         prop="phoneNum"
@@ -143,31 +160,24 @@
       >
       </el-table-column>
       <el-table-column
-        prop="workAddress"
-        header-align="center"
-        align="center"
-        label="工作地址"
-      >
-      </el-table-column>
-      <el-table-column
         prop="note"
         header-align="center"
         align="center"
         label="备注"
       >
       </el-table-column>
-      <el-table-column
+      <!-- <el-table-column
         prop="aluStatus"
         header-align="center"
         align="center"
         label="状态"
       >
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column
         prop="createTime"
         header-align="center"
         align="center"
-        label="注册时间"
+        label="创建时间"
       >
       </el-table-column>
       <el-table-column
@@ -195,12 +205,23 @@
       </el-table-column>
     </el-table>
     <br />
-    <br>
+    <br />
+    <el-alert title="温馨提示：" type="warning" :closable="false">
+      <div>
+        <p class="el-alert__description">
+          只能同时持有一条待审核的记录，如果需要修改，请先撤销再重新申请审核
+        </p>
+        <p class="el-alert__description">
+          如果数据显示不正确，可能是网络原因，请耐心等待或刷新重试
+        </p>
+      </div>
+    </el-alert>
     <el-card class="box-card">
-      修改信息的审核记录
+      修改信息的审核记录（最新记录在最下方）
     </el-card>
     <el-table
       :data="auditList"
+      stripe
       border
       v-loading="auditListLoading"
       style="width: 100%"
@@ -216,7 +237,7 @@
         prop="id"
         header-align="center"
         align="center"
-        label="id"
+        label="审核id"
       >
       </el-table-column>
       <!-- <el-table-column
@@ -334,6 +355,16 @@ export default {
     this.getAuditList();
   },
   methods: {
+    // 前端展示date数据格式
+    formatTime(row, column, cellValue, index) {
+      if (typeof cellValue === "string") {
+        return cellValue; // 字符串类型的日期，直接返回
+      } else if (cellValue instanceof Date) {
+        return formatDate(cellValue); // Date 类型的日期，调用 formatDate 方法进行格式化
+      } else {
+        return ""; // 其他类型的数据，返回空字符串或自定义默认值
+      }
+    },
     // 获取校友数据
     getDataList() {
       this.dataListLoading = true;
@@ -342,7 +373,6 @@ export default {
         method: "get",
         params: this.$http.adornParams()
       }).then(({ data }) => {
-        console.info(data);
         if (data && data.code === 0) {
           this.dataList = [data.user];
         } else {

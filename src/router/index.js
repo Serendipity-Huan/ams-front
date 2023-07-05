@@ -22,7 +22,7 @@ const globalRoutes = [
   // rjl: 校友页面的路由
   {
     path: '/alumni',
-    component: _import('modules/alumni/alumni-main'),
+    component: _import('modules/student/alumni-main'),
     name: 'alumni-main',
     redirect: { name: 'alumni-home' },
     meta: { title: '校友页面整体布局' },
@@ -103,7 +103,7 @@ const alumniMenuList = [
         parentId: 39,
         parentName: null,
         name: '个人中心',
-        url: 'alumni/personalcenter',
+        url: 'student/personalcenter',
         perms: '',
         type: 1,
         icon: 'bianji',

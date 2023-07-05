@@ -1,5 +1,14 @@
 <template>
   <div class="mod-config">
+    <el-alert
+      title="温馨提示："
+      type="warning"
+      :closable="false">
+      <div>
+        <p class="el-alert__description">发送邮件可能耗时较长，请耐心等待</p>
+      </div>
+    </el-alert>
+    <br>
     <el-form :model="dataForm">
       <el-row :gutter="20">
         <el-col :span="4" style="display: flex; align-items: center;">
@@ -34,9 +43,10 @@
       </el-row>
 
       <el-form-item class="top-margin">
-        <el-button @click="conditionQuery()">查询</el-button>
-        <el-button v-if="isAuth('ams:alumnusbasic:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
-        <el-button v-if="isAuth('ams:alumnusbasic:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
+        <el-button @click="conditionQuery()" type="success" icon="el-icon-search">查询</el-button>
+        <!-- <el-button v-if="isAuth('ams:alumnusbasic:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button> -->
+        <!-- <el-button v-if="isAuth('ams:alumnusbasic:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button> -->
+        <el-button type="primary" style="margin-left: 100px" icon="el-icon-message" @click="allInfoSend()" :disabled="dataListSelections.length <= 0 || unsendable">批量发送通知邮件</el-button>
       </el-form-item>
     </el-form>
     <el-col :span="22">
@@ -46,9 +56,6 @@
         placeholder="请输入通知内容"
         v-model="info.information">
       </el-input>
-    </el-col>
-    <el-col style="margin-left: 1500px">
-      <el-button type="danger" @click="allInfoSend()" :disabled="dataListSelections.length <= 0">批量发送</el-button>
     </el-col>
     <div class="top-margin">
       <el-table
@@ -218,6 +225,8 @@ export default {
         clazz: ''
 
       },
+      // 初始时，“不可发送”为false，即可发送，这个变量用于防止短时间重复点击发送
+      unsendable: false,
       // 按性别选择的选项
       genderOptions: [{
         value: '', label: '请选择'
@@ -306,13 +315,13 @@ export default {
     }
   },
   activated () {
-    this.getDataList()
+    this.conditionQuery()
   },
   methods: {
     // 多条件查询
     conditionQuery () {
       this.$http({
-        url: this.$http.adornUrl('/basic/alumnusbasic/alumniData'),
+        url: this.$http.adornUrl('/sys/feign/alumniData'),
         method: 'post',
         data: this.$http.adornData(this.dataForm, false)
       }).then(({data}) => {
@@ -331,13 +340,14 @@ export default {
         return item.id
       })
       this.info.ids = ids
-      this.$confirm(`确定对[id=${ids.join(',')}]进行[${id ? '删除' : '批量删除'}]操作?`, '提示', {
+      this.$confirm(`确定对[id=${ids.join(',')}]进行[${id ? '发送' : '批量发送'}]操作?`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
+        this.unsendable = true // 防止短时间重复点击发送
         this.$http({
-          url: this.$http.adornUrl('/basic/mail/sendInformMail'),
+          url: this.$http.adornUrl('/sys/feign/sendInformMail'),
           method: 'post',
           data: this.$http.adornData(this.info, false)
         }).then(({data}) => {
@@ -347,45 +357,46 @@ export default {
               type: 'success',
               duration: 1500,
               onClose: () => {
-                this.getDataList()
+                // this.conditionQuery()
               }
             })
           } else {
             this.$message.error(data.msg)
           }
         })
+        this.unsendable = false // 防止短时间重复点击发送
       })
     },
-    // 批量生日祝福通知
-    allSend (id) {
-      var ids = id ? [id] : this.dataListSelections.map(item => {
-        return item.id
-      })
-      this.$confirm(`确定对[id=${ids.join(',')}]进行[${id ? '删除' : '批量删除'}]操作?`, '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.$http({
-          url: this.$http.adornUrl('/basic/mail/sendBirthDayMails'),
-          method: 'post',
-          data: this.$http.adornData(ids, false)
-        }).then(({data}) => {
-          if (data && data.code === 0) {
-            this.$message({
-              message: '操作成功',
-              type: 'success',
-              duration: 1500,
-              onClose: () => {
-                this.getDataList()
-              }
-            })
-          } else {
-            this.$message.error(data.msg)
-          }
-        })
-      })
-    },
+    // // 批量生日祝福通知
+    // allSend (id) {
+    //   var ids = id ? [id] : this.dataListSelections.map(item => {
+    //     return item.id
+    //   })
+    //   this.$confirm(`确定对[id=${ids.join(',')}]进行[${id ? '删除' : '批量删除'}]操作?`, '提示', {
+    //     confirmButtonText: '确定',
+    //     cancelButtonText: '取消',
+    //     type: 'warning'
+    //   }).then(() => {
+    //     this.$http({
+    //       url: this.$http.adornUrl('/basic/mail/sendBirthDayMails'),
+    //       method: 'post',
+    //       data: this.$http.adornData(ids, false)
+    //     }).then(({data}) => {
+    //       if (data && data.code === 0) {
+    //         this.$message({
+    //           message: '操作成功',
+    //           type: 'success',
+    //           duration: 1500,
+    //           onClose: () => {
+    //             this.getDataList()
+    //           }
+    //         })
+    //       } else {
+    //         this.$message.error(data.msg)
+    //       }
+    //     })
+    //   })
+    // },
     // // 生日快乐通知
     // inform (id) {
     //   this.$confirm(`确定通知操作?`, '提示', {
@@ -414,36 +425,36 @@ export default {
     //     })
     //   })
     // },
-    // 获取数据列表
-    getDataList () {
-      this.$http({
-        url: this.$http.adornUrl('/basic/alumnusbasic/list'),
-        method: 'get',
-        params: this.$http.adornParams({
-          'page': this.pageIndex,
-          'limit': this.pageSize
-          // 'key': this.dataForm.key
-        })
-      }).then(({data}) => {
-        if (data && data.code === 0) {
-          this.dataList = data.page.list
-          this.totalPage = data.page.totalCount
-        } else {
-          this.dataList = []
-          this.totalPage = 0
-        }
-      })
-    },
+    // // 获取数据列表
+    // getDataList () {
+    //   this.$http({
+    //     url: this.$http.adornUrl('/basic/alumnusbasic/list'),
+    //     method: 'get',
+    //     params: this.$http.adornParams({
+    //       'page': this.pageIndex,
+    //       'limit': this.pageSize
+    //       // 'key': this.dataForm.key
+    //     })
+    //   }).then(({data}) => {
+    //     if (data && data.code === 0) {
+    //       this.dataList = data.page.list
+    //       this.totalPage = data.page.totalCount
+    //     } else {
+    //       this.dataList = []
+    //       this.totalPage = 0
+    //     }
+    //   })
+    // },
     // 每页数
     sizeChangeHandle (val) {
       this.pageSize = val
       this.pageIndex = 1
-      this.getDataList()
+      this.conditionQuery()
     },
     // 当前页
     currentChangeHandle (val) {
       this.pageIndex = val
-      this.getDataList()
+      this.conditionQuery()
     },
     // 多选
     selectionChangeHandle (val) {

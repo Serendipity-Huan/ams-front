@@ -7,7 +7,8 @@
   ],
   "plugins": ["transform-runtime", ["component", [
     {
-      "libraryName": "element-ui"
+      "libraryName": "element-ui",
+      "styleLibraryName": "theme-chalk" // 按需引入element-ui的组件，同时自动引入这些组件对应的样式
     }
   ]]],
   "env": {
