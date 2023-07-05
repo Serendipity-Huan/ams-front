@@ -8,7 +8,7 @@
       <el-input v-model="dataForm.aluName" placeholder="姓名"></el-input>
     </el-form-item>
     <el-form-item label="学号" prop="aluId">
-      <el-input v-model="dataForm.aluId" placeholder="学号"></el-input>
+      <el-input v-model="dataForm.aluId" placeholder="学号" :disabled="true"></el-input>
     </el-form-item>
     <el-form-item label="性别" prop="gender">
       <el-select v-model="dataForm.gender" clearable style="width: 100%;">
@@ -126,7 +126,6 @@ export default {
         major: '',
         degreeStage: '',
         phoneNum: '',
-        mailingAddress: '',
         city: '',
         workUnit: '',
         jobTitle: '',
@@ -147,7 +146,7 @@ export default {
         password: '',
         createTime: ''
       },
-        // 按性别选择的选项
+      // 按性别选择的选项
       genderOptions: [{
         value: '', label: '请选择'
       }, {
@@ -155,7 +154,7 @@ export default {
       }, {
         value: 1, label: '女'
       }],
-        // 按专业选择的选项
+      // 按专业选择的选项
       majorOptions: [{
         value: '', label: '请选择'
       }, {
@@ -207,7 +206,7 @@ export default {
       }, {
         value: '燃烧动力学', label: '燃烧动力学'
       }],
-        // 按民族选择的选项
+      // 按民族选择的选项
       peopleOptions: [{
         value: '', label: '请选择'
       }, {
@@ -323,7 +322,7 @@ export default {
       }, {
         value: '基诺族', label: '基诺族'
       }],
-        // 按政治面貌选择的选项
+      // 按政治面貌选择的选项
       politicalStatusOptions: [{
         value: '', label: '请选择'
       }, {
@@ -335,8 +334,8 @@ export default {
       }, {
         value: '群众', label: '群众'
       }],
-        // 按地区（籍贯、所在城市）选择的选项
-        // 按班级选择的选项
+      // 按地区（籍贯、所在城市）选择的选项
+      // 按班级选择的选项
       classOptions: [{
         value: '', label: '请选择'
       }, {
@@ -480,7 +479,7 @@ export default {
       }, {
         value: '化学工程与工艺十班', label: '化学工程与工艺十班'
       }],
-        // 按阶段选择的选项
+      // 按阶段选择的选项
       phaseOptions: [{
         value: '', label: '请选择'
       }, {
@@ -490,7 +489,7 @@ export default {
       }, {
         value: 2, label: '博士'
       }],
-        // 按企业性质选择的选项
+      // 按企业性质选择的选项
       enterpriseOptions: [{
         value: '', label: '请选择'
       }, {
@@ -506,6 +505,8 @@ export default {
       }, {
         value: '其他', label: '其他'
       }],
+
+      // 数据校验规则
       dataRule: {
         aluName: [
             { required: true, message: '姓名不能为空', trigger: 'blur' }
@@ -513,57 +514,57 @@ export default {
         aluId: [
             { required: true, message: '学号不能为空', trigger: 'blur' }
         ],
-        gender: [
-            { required: true, message: '性别不能为空', trigger: 'blur' }
-        ],
-        idCard: [
-            { required: true, message: '身份证号不能为空', trigger: 'blur' }
-        ],
-        nationality: [
-            { required: true, message: '民族不能为空', trigger: 'blur' }
-        ],
-        politicalStatus: [
-            { required: true, message: '政治面貌不能为空', trigger: 'blur' }
-        ],
-        email: [
-            { required: true, message: '邮箱不能为空', trigger: 'blur' }
-        ],
-        nativePlace: [
-            { required: true, message: '籍贯不能为空', trigger: 'blur' }
-        ],
-        clazz: [
-            { required: true, message: '班级不能为空', trigger: 'blur' }
-        ],
-        admissionTime: [
-            { required: true, message: '入学时间不能为空', trigger: 'blur' }
-        ],
-        graduationTime: [
-            { required: true, message: '毕业时间不能为空', trigger: 'blur' }
-        ],
-        department: [
-            { required: true, message: '院系不能为空', trigger: 'blur' }
-        ],
-        major: [
-            { required: true, message: '专业不能为空', trigger: 'blur' }
-        ],
-        degreeStage: [
-            { required: true, message: '阶段不能为空', trigger: 'blur' }
-        ],
-        phoneNum: [
-            { required: true, message: '手机不能为空', trigger: 'blur' }
-        ],
-        city: [
-            { required: true, message: '所在城市不能为空', trigger: 'blur' }
-        ],
-        workUnit: [
-            { required: true, message: '工作单位不能为空', trigger: 'blur' }
-        ],
-        jobTitle: [
-            { required: true, message: '担任职务不能为空', trigger: 'blur' }
-        ],
-        enterpriseProperty: [
-            { required: true, message: '企业性质不能为空', trigger: 'blur' }
-        ]
+        // gender: [
+        //     { required: true, message: '性别不能为空', trigger: 'blur' }
+        // ],
+        // idCard: [
+        //     { required: true, message: '身份证号不能为空', trigger: 'blur' }
+        // ],
+        // nationality: [
+        //     { required: true, message: '民族不能为空', trigger: 'blur' }
+        // ],
+        // politicalStatus: [
+        //     { required: true, message: '政治面貌不能为空', trigger: 'blur' }
+        // ],
+        // email: [
+        //     { required: true, message: '邮箱不能为空', trigger: 'blur' }
+        // ],
+        // nativePlace: [
+        //     { required: true, message: '籍贯不能为空', trigger: 'blur' }
+        // ],
+        // clazz: [
+        //     { required: true, message: '班级不能为空', trigger: 'blur' }
+        // ],
+        // admissionTime: [
+        //     { required: true, message: '入学时间不能为空', trigger: 'blur' }
+        // ],
+        // graduationTime: [
+        //     { required: true, message: '毕业时间不能为空', trigger: 'blur' }
+        // ],
+        // department: [
+        //     { required: true, message: '院系不能为空', trigger: 'blur' }
+        // ],
+        // major: [
+        //     { required: true, message: '专业不能为空', trigger: 'blur' }
+        // ],
+        // degreeStage: [
+        //     { required: true, message: '阶段不能为空', trigger: 'blur' }
+        // ],
+        // phoneNum: [
+        //     { required: true, message: '手机不能为空', trigger: 'blur' }
+        // ],
+        // city: [
+        //     { required: true, message: '所在城市不能为空', trigger: 'blur' }
+        // ],
+        // workUnit: [
+        //     { required: true, message: '工作单位不能为空', trigger: 'blur' }
+        // ],
+        // jobTitle: [
+        //     { required: true, message: '担任职务不能为空', trigger: 'blur' }
+        // ],
+        // enterpriseProperty: [
+        //     { required: true, message: '企业性质不能为空', trigger: 'blur' }
+        // ]
           // note: [
           //   { required: true, message: '备注不能为空', trigger: 'blur' }
           // ]
@@ -572,14 +573,14 @@ export default {
   },
   methods: {
     init (data) {
-      this.dataForm = data
+      // this.dataForm = data
       this.dataForm.id = data.id || 0
       this.visible = true
       this.$nextTick(() => {
         this.$refs['dataForm'].resetFields()
         if (this.dataForm.id) {
           this.$http({
-            url: this.$http.adornUrl(`/ams/alumnusbasic/info/${this.dataForm.id}`),
+            url: this.$http.adornUrl(`/sys/feign/info/${this.dataForm.id}`),
             method: 'get',
             params: this.$http.adornParams()
           }).then(({data}) => {
@@ -598,12 +599,13 @@ export default {
               this.dataForm.major = data.alumnusBasic.major
               this.dataForm.degreeStage = data.alumnusBasic.degreeStage
               this.dataForm.phoneNum = data.alumnusBasic.phoneNum
-              this.dataForm.mailingAddress = data.alumnusBasic.mailingAddress
               this.dataForm.city = data.alumnusBasic.city
               this.dataForm.workUnit = data.alumnusBasic.workUnit
               this.dataForm.jobTitle = data.alumnusBasic.jobTitle
               this.dataForm.enterpriseProperty = data.alumnusBasic.enterpriseProperty
               this.dataForm.note = data.alumnusBasic.note
+            } else {
+              this.$message.error(data.msg);
             }
           })
         }
@@ -619,12 +621,12 @@ export default {
             type: 'warning'
           }).then(() => {
             this.$http({
-              url: this.$http.adornUrl(`/basic/alumnusbasic/update`),
+              url: this.$http.adornUrl(`/sys/feign/update`),
               method: 'post',
               data: this.$http.adornData({
                 'id': this.dataForm.id,
                 'aluName': this.dataForm.aluName,
-                'aluId': this.dataForm.aluId,
+                // 'aluId': this.dataForm.aluId,
                 'gender': this.dataForm.gender,
                 'idCard': this.dataForm.idCard,
                 'nationality': this.dataForm.nationality,
@@ -637,7 +639,6 @@ export default {
                 'major': this.dataForm.major,
                 'degreeStage': this.dataForm.degreeStage,
                 'phoneNum': this.dataForm.phoneNum,
-                'mailingAddress': this.dataForm.mailingAddress,
                 'city': this.dataForm.city,
                 'workUnit': this.dataForm.workUnit,
                 'jobTitle': this.dataForm.jobTitle,

@@ -4,6 +4,13 @@
     :close-on-click-modal="false"
     :visible.sync="visible"
   >
+    <el-alert title="温馨提示：" type="warning" :closable="false">
+      <div>
+        <p class="el-alert__description">
+          此页面仅供展示，直接修改数据无法生效
+        </p>
+      </div>
+    </el-alert>
     <div class="modal">
       <div class="left">
         <h2>修改前：</h2>
@@ -21,10 +28,18 @@
             ></el-input>
           </el-form-item>
           <el-form-item label="性别" prop="gender">
-            <el-input
+            <el-select
               v-model="dataFormBasic.gender"
-              placeholder="性别"
-            ></el-input>
+              clearable
+              style="width: 100%;"
+            >
+              <el-option
+                v-for="item in genderOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
           </el-form-item>
           <el-form-item label="身份证号" prop="idCard">
             <el-input
@@ -33,16 +48,34 @@
             ></el-input>
           </el-form-item>
           <el-form-item label="民族" prop="nationality">
-            <el-input
+            <el-select
               v-model="dataFormBasic.nationality"
-              placeholder="民族"
-            ></el-input>
+              clearable
+              style="width: 100%;"
+            >
+              <el-option
+                v-for="item in peopleOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >
+              </el-option>
+            </el-select>
           </el-form-item>
           <el-form-item label="政治面貌" prop="politicalStatus">
-            <el-input
+            <el-select
               v-model="dataFormBasic.politicalStatus"
-              placeholder="政治面貌"
-            ></el-input>
+              clearable
+              style="width: 100%;"
+            >
+              <el-option
+                v-for="item in politicalStatusOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >
+              </el-option>
+            </el-select>
           </el-form-item>
           <el-form-item label="邮箱" prop="email">
             <el-input
@@ -57,34 +90,71 @@
             ></el-input>
           </el-form-item>
           <el-form-item label="班级" prop="clazz">
-            <el-input
+            <el-select
               v-model="dataFormBasic.clazz"
-              placeholder="班级"
-            ></el-input>
+              clearable
+              style="width: 100%;"
+            >
+              <el-option
+                v-for="item in classOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >
+              </el-option>
+            </el-select>
           </el-form-item>
           <el-form-item label="入学时间" prop="admissionTime">
-            <el-input
+            <el-date-picker
               v-model="dataFormBasic.admissionTime"
-              placeholder="入学时间"
-            ></el-input>
+              type="date"
+              :value-format="'yyyy-MM-dd'"
+              style="width: 100%;"
+              placeholder="选择日期"
+              :clearable="false"
+            >
+            </el-date-picker>
           </el-form-item>
           <el-form-item label="毕业时间" prop="graduationTime">
-            <el-input
+            <el-date-picker
               v-model="dataFormBasic.graduationTime"
-              placeholder="毕业时间"
-            ></el-input>
+              type="date"
+              style="width: 100%;"
+              :value-format="'yyyy-MM-dd'"
+              placeholder="选择日期"
+              :clearable="false"
+            >
+            </el-date-picker>
           </el-form-item>
           <el-form-item label="专业" prop="major">
-            <el-input
+            <el-select
               v-model="dataFormBasic.major"
-              placeholder="专业"
-            ></el-input>
+              clearable
+              style="width: 100%;"
+            >
+              <el-option
+                v-for="item in majorOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >
+              </el-option>
+            </el-select>
           </el-form-item>
           <el-form-item label="阶段" prop="degreeStage">
-            <el-input
-              v-model="dataFormBasic.degreeStage"
-              placeholder="阶段"
-            ></el-input>
+            <el-select
+              v-model.number="dataFormBasic.degreeStage"
+              clearable
+              style="width: 100%;"
+            >
+              <el-option
+                v-for="item in phaseOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >
+              </el-option>
+            </el-select>
           </el-form-item>
           <el-form-item label="手机" prop="phoneNum">
             <el-input
@@ -111,10 +181,19 @@
             ></el-input>
           </el-form-item>
           <el-form-item label="企业性质" prop="enterpriseProperty">
-            <el-input
+            <el-select
               v-model="dataFormBasic.enterpriseProperty"
-              placeholder="企业性质"
-            ></el-input>
+              clearable
+              style="width: 100%;"
+            >
+              <el-option
+                v-for="item in enterpriseOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >
+              </el-option>
+            </el-select>
           </el-form-item>
           <el-form-item label="备注" prop="note">
             <el-input
@@ -122,12 +201,12 @@
               placeholder="备注"
             ></el-input>
           </el-form-item>
-          <el-form-item label="状态" prop="aluStatus">
+          <!-- <el-form-item label="状态" prop="aluStatus">
             <el-input
               v-model="dataFormBasic.aluStatus"
               placeholder="状态"
             ></el-input>
-          </el-form-item>
+          </el-form-item> -->
         </el-form>
       </div>
       <div class="right">
@@ -140,7 +219,14 @@
             <el-input v-model="dataForm.aluId" placeholder="学号"></el-input>
           </el-form-item>
           <el-form-item prop="gender">
-            <el-input v-model="dataForm.gender" placeholder="性别"></el-input>
+            <el-select v-model="dataForm.gender" clearable style="width: 100%;">
+              <el-option
+                v-for="item in genderOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
           </el-form-item>
           <el-form-item prop="idCard">
             <el-input
@@ -149,16 +235,34 @@
             ></el-input>
           </el-form-item>
           <el-form-item prop="nationality">
-            <el-input
+            <el-select
               v-model="dataForm.nationality"
-              placeholder="民族"
-            ></el-input>
+              clearable
+              style="width: 100%;"
+            >
+              <el-option
+                v-for="item in peopleOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >
+              </el-option>
+            </el-select>
           </el-form-item>
           <el-form-item prop="politicalStatus">
-            <el-input
+            <el-select
               v-model="dataForm.politicalStatus"
-              placeholder="政治面貌"
-            ></el-input>
+              clearable
+              style="width: 100%;"
+            >
+              <el-option
+                v-for="item in politicalStatusOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >
+              </el-option>
+            </el-select>
           </el-form-item>
           <el-form-item prop="email">
             <el-input v-model="dataForm.email" placeholder="邮箱"></el-input>
@@ -170,28 +274,63 @@
             ></el-input>
           </el-form-item>
           <el-form-item prop="clazz">
-            <el-input v-model="dataForm.clazz" placeholder="班级"></el-input>
+            <el-select v-model="dataForm.clazz" clearable style="width: 100%;">
+              <el-option
+                v-for="item in classOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >
+              </el-option>
+            </el-select>
           </el-form-item>
           <el-form-item prop="admissionTime">
-            <el-input
+            <el-date-picker
               v-model="dataForm.admissionTime"
-              placeholder="入学时间"
-            ></el-input>
+              type="date"
+              :value-format="'yyyy-MM-dd'"
+              style="width: 100%;"
+              placeholder="选择日期"
+              :clearable="false"
+            >
+            </el-date-picker>
           </el-form-item>
           <el-form-item prop="graduationTime">
-            <el-input
+            <el-date-picker
               v-model="dataForm.graduationTime"
-              placeholder="毕业时间"
-            ></el-input>
+              type="date"
+              style="width: 100%;"
+              :value-format="'yyyy-MM-dd'"
+              placeholder="选择日期"
+              :clearable="false"
+            >
+            </el-date-picker>
           </el-form-item>
           <el-form-item prop="major">
-            <el-input v-model="dataForm.major" placeholder="专业"></el-input>
+            <el-select v-model="dataForm.major" clearable style="width: 100%;">
+              <el-option
+                v-for="item in majorOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >
+              </el-option>
+            </el-select>
           </el-form-item>
           <el-form-item prop="degreeStage">
-            <el-input
-              v-model="dataForm.degreeStage"
-              placeholder="阶段"
-            ></el-input>
+            <el-select
+              v-model.number="dataForm.degreeStage"
+              clearable
+              style="width: 100%;"
+            >
+              <el-option
+                v-for="item in phaseOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >
+              </el-option>
+            </el-select>
           </el-form-item>
           <el-form-item prop="phoneNum">
             <el-input v-model="dataForm.phoneNum" placeholder="手机"></el-input>
@@ -212,20 +351,29 @@
             ></el-input>
           </el-form-item>
           <el-form-item prop="enterpriseProperty">
-            <el-input
+            <el-select
               v-model="dataForm.enterpriseProperty"
-              placeholder="企业性质"
-            ></el-input>
+              clearable
+              style="width: 100%;"
+            >
+              <el-option
+                v-for="item in enterpriseOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >
+              </el-option>
+            </el-select>
           </el-form-item>
           <el-form-item prop="note">
             <el-input v-model="dataForm.note" placeholder="备注"></el-input>
           </el-form-item>
-          <el-form-item prop="aluStatus">
+          <!-- <el-form-item prop="aluStatus">
             <el-input
               v-model="dataForm.aluStatus"
               placeholder="状态"
             ></el-input>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item label="审核状态" prop="status">
             <el-tag size="medium" :type="showStatus[dataForm.status]">{{
               dataForm.status == 0
@@ -281,6 +429,716 @@ export default {
         note: "",
         aluStatus: ""
       },
+      // 按性别选择的选项
+      genderOptions: [
+        {
+          value: "",
+          label: "请选择"
+        },
+        {
+          value: 0,
+          label: "男"
+        },
+        {
+          value: 1,
+          label: "女"
+        }
+      ],
+      // 按专业选择的选项
+      majorOptions: [
+        {
+          value: "",
+          label: "请选择"
+        },
+        {
+          value: "安全工程",
+          label: "安全工程"
+        },
+        {
+          value: "动力工程",
+          label: "动力工程"
+        },
+        {
+          value: "冶金工程",
+          label: "冶金工程"
+        },
+        {
+          value: "有色金属冶金",
+          label: "有色金属冶金"
+        },
+        {
+          value: "工业催化",
+          label: "工业催化"
+        },
+        {
+          value: "过程装备与控制工程",
+          label: "过程装备与控制工程"
+        },
+        {
+          value: "化工过程机械",
+          label: "化工过程机械"
+        },
+        {
+          value: "化学工程",
+          label: "化学工程"
+        },
+        {
+          value: "化学工程与工艺",
+          label: "化学工程与工艺"
+        },
+        {
+          value: "化学工程与技术",
+          label: "化学工程与技术"
+        },
+        {
+          value: "化学工艺",
+          label: "化学工艺"
+        },
+        {
+          value: "生物工程",
+          label: "生物工程"
+        },
+        {
+          value: "生物化工",
+          label: "生物化工"
+        },
+        {
+          value: "物理化学",
+          label: "物理化学"
+        },
+        {
+          value: "应用化学",
+          label: "应用化学"
+        },
+        {
+          value: "分析化学",
+          label: "分析化学"
+        },
+        {
+          value: "放射化学",
+          label: "放射化学"
+        },
+        {
+          value: "无机非金属材料",
+          label: "无机非金属材料"
+        },
+        {
+          value: "无机化工",
+          label: "无机化工"
+        },
+        {
+          value: "有机化工",
+          label: "有机化工"
+        },
+        {
+          value: "精细化工",
+          label: "精细化工"
+        },
+        {
+          value: "制药工程",
+          label: "制药工程"
+        },
+        {
+          value: "伦理化工",
+          label: "伦理化工"
+        },
+        {
+          value: "燃烧动力学",
+          label: "燃烧动力学"
+        }
+      ],
+      // 按民族选择的选项
+      peopleOptions: [
+        {
+          value: "",
+          label: "请选择"
+        },
+        {
+          value: "汉族",
+          label: "汉族"
+        },
+        {
+          value: "壮族",
+          label: "壮族"
+        },
+        {
+          value: "蒙古族",
+          label: "蒙古族"
+        },
+        {
+          value: "回族",
+          label: "回族"
+        },
+        {
+          value: "藏族",
+          label: "藏族"
+        },
+        {
+          value: "维吾尔族",
+          label: "维吾尔族"
+        },
+        {
+          value: "苗族",
+          label: "苗族"
+        },
+        {
+          value: "彝族",
+          label: "彝族"
+        },
+        {
+          value: "布依族",
+          label: "布依族"
+        },
+        {
+          value: "朝鲜族",
+          label: "朝鲜族"
+        },
+        {
+          value: "满族",
+          label: "满族"
+        },
+        {
+          value: "侗族",
+          label: "侗族"
+        },
+        {
+          value: "瑶族",
+          label: "瑶族"
+        },
+        {
+          value: "白族",
+          label: "白族"
+        },
+        {
+          value: "东乡族",
+          label: "东乡族"
+        },
+        {
+          value: "锡伯族",
+          label: "锡伯族"
+        },
+        {
+          value: "土家族",
+          label: "土家族"
+        },
+        {
+          value: "哈尼族",
+          label: "哈尼族"
+        },
+        {
+          value: "哈萨克族",
+          label: "哈萨克族"
+        },
+        {
+          value: "傣族",
+          label: "傣族"
+        },
+        {
+          value: "黎族",
+          label: "黎族"
+        },
+        {
+          value: "僳僳族",
+          label: "僳僳族"
+        },
+        {
+          value: "佤族",
+          label: "佤族"
+        },
+        {
+          value: "畲族",
+          label: "畲族"
+        },
+        {
+          value: "拉祜族",
+          label: "拉祜族"
+        },
+        {
+          value: "水族",
+          label: "水族"
+        },
+        {
+          value: "纳西族",
+          label: "纳西族"
+        },
+        {
+          value: "景颇族",
+          label: "景颇族"
+        },
+        {
+          value: "柯尔克孜族",
+          label: "柯尔克孜族"
+        },
+        {
+          value: "土族",
+          label: "土族"
+        },
+        {
+          value: "高山族",
+          label: "高山族"
+        },
+        {
+          value: "达斡尔族",
+          label: "达斡尔族"
+        },
+        {
+          value: "仫佬族",
+          label: "仫佬族"
+        },
+        {
+          value: "羌族",
+          label: "羌族"
+        },
+        {
+          value: "撒拉族",
+          label: "撒拉族"
+        },
+        {
+          value: "德昂族",
+          label: "德昂族"
+        },
+        {
+          value: "仡佬族",
+          label: "仡佬族"
+        },
+        {
+          value: "阿昌族",
+          label: "阿昌族"
+        },
+        {
+          value: "普米族",
+          label: "普米族"
+        },
+        {
+          value: "布朗族",
+          label: "布朗族"
+        },
+        {
+          value: "塔吉克族",
+          label: "塔吉克族"
+        },
+        {
+          value: "怒族",
+          label: "怒族"
+        },
+        {
+          value: "乌孜别克族",
+          label: "乌孜别克族"
+        },
+        {
+          value: "俄罗斯族",
+          label: "俄罗斯族"
+        },
+        {
+          value: "鄂温克族",
+          label: "鄂温克族"
+        },
+        {
+          value: "毛南族",
+          label: "毛南族"
+        },
+        {
+          value: "保安族",
+          label: "保安族"
+        },
+        {
+          value: "裕固族",
+          label: "裕固族"
+        },
+        {
+          value: "京族",
+          label: "京族"
+        },
+        {
+          value: "塔塔尔族",
+          label: "塔塔尔族"
+        },
+        {
+          value: "独龙族",
+          label: "独龙族"
+        },
+        {
+          value: "鄂伦春族",
+          label: "鄂伦春族"
+        },
+        {
+          value: "赫哲族",
+          label: "赫哲族"
+        },
+        {
+          value: "门巴族",
+          label: "门巴族"
+        },
+        {
+          value: "珞巴族",
+          label: "珞巴族"
+        },
+        {
+          value: "基诺族",
+          label: "基诺族"
+        }
+      ],
+      // 按政治面貌选择的选项
+      politicalStatusOptions: [
+        {
+          value: "",
+          label: "请选择"
+        },
+        {
+          value: "共青团员",
+          label: "共青团员"
+        },
+        {
+          value: "中共党员",
+          label: "中共党员"
+        },
+        {
+          value: "预备党员",
+          label: "预备党员"
+        },
+        {
+          value: "群众",
+          label: "群众"
+        }
+      ],
+      // 按班级选择的选项
+      classOptions: [
+        {
+          value: "",
+          label: "请选择"
+        },
+        {
+          value: "工艺一班",
+          label: "工艺一班"
+        },
+        {
+          value: "工艺二班",
+          label: "工艺二班"
+        },
+        {
+          value: "工艺三班",
+          label: "工艺三班"
+        },
+        {
+          value: "工艺四班",
+          label: "工艺四班"
+        },
+        {
+          value: "工艺五班",
+          label: "工艺五班"
+        },
+        {
+          value: "工艺六班",
+          label: "工艺六班"
+        },
+        {
+          value: "工艺七班",
+          label: "工艺七班"
+        },
+        {
+          value: "工艺八班",
+          label: "工艺八班"
+        },
+        {
+          value: "工艺九班",
+          label: "工艺九班"
+        },
+        {
+          value: "工艺十班",
+          label: "工艺十班"
+        },
+        {
+          value: "制药一班",
+          label: "制药一班"
+        },
+        {
+          value: "制药二班",
+          label: "制药二班"
+        },
+        {
+          value: "制药三班",
+          label: "制药三班"
+        },
+        {
+          value: "制药四班",
+          label: "制药四班"
+        },
+        {
+          value: "制药五班",
+          label: "制药五班"
+        },
+        {
+          value: "制药六班",
+          label: "制药六班"
+        },
+        {
+          value: "制药七班",
+          label: "制药七班"
+        },
+        {
+          value: "制药八班",
+          label: "制药八班"
+        },
+        {
+          value: "制药九班",
+          label: "制药九班"
+        },
+        {
+          value: "制药十班",
+          label: "制药十班"
+        },
+        {
+          value: "安全工程一班",
+          label: "安全工程一班"
+        },
+        {
+          value: "安全工程二班",
+          label: "安全工程二班"
+        },
+        {
+          value: "安全工程三班",
+          label: "安全工程三班"
+        },
+        {
+          value: "安全工程四班",
+          label: "安全工程四班"
+        },
+        {
+          value: "安全工程五班",
+          label: "安全工程五班"
+        },
+        {
+          value: "安全工程六班",
+          label: "安全工程六班"
+        },
+        {
+          value: "安全工程七班",
+          label: "安全工程七班"
+        },
+        {
+          value: "安全工程八班",
+          label: "安全工程八班"
+        },
+        {
+          value: "安全工程九班",
+          label: "安全工程九班"
+        },
+        {
+          value: "安全工程十班",
+          label: "安全工程十班"
+        },
+        {
+          value: "生工一班",
+          label: "生工一班"
+        },
+        {
+          value: "生工二班",
+          label: "生工二班"
+        },
+        {
+          value: "生工三班",
+          label: "生工三班"
+        },
+        {
+          value: "生工四班",
+          label: "生工四班"
+        },
+        {
+          value: "生工五班",
+          label: "生工五班"
+        },
+        {
+          value: "生工六班",
+          label: "生工六班"
+        },
+        {
+          value: "生工七班",
+          label: "生工七班"
+        },
+        {
+          value: "生工八班",
+          label: "生工八班"
+        },
+        {
+          value: "生工九班",
+          label: "生工九班"
+        },
+        {
+          value: "生工十班",
+          label: "生工十班"
+        },
+        {
+          value: "冶金一班",
+          label: "冶金一班"
+        },
+        {
+          value: "冶金二班",
+          label: "冶金二班"
+        },
+        {
+          value: "冶金三班",
+          label: "冶金三班"
+        },
+        {
+          value: "冶金四班",
+          label: "冶金四班"
+        },
+        {
+          value: "冶金五班",
+          label: "冶金五班"
+        },
+        {
+          value: "冶金六班",
+          label: "冶金六班"
+        },
+        {
+          value: "冶金七班",
+          label: "冶金七班"
+        },
+        {
+          value: "冶金八班",
+          label: "冶金八班"
+        },
+        {
+          value: "冶金九班",
+          label: "冶金九班"
+        },
+        {
+          value: "冶金十班",
+          label: "冶金十班"
+        },
+        {
+          value: "过程装备与控制工程一班",
+          label: "过程装备与控制工程一班"
+        },
+        {
+          value: "过程装备与控制工程二班",
+          label: "过程装备与控制工程二班"
+        },
+        {
+          value: "过程装备与控制工程三班",
+          label: "过程装备与控制工程三班"
+        },
+        {
+          value: "过程装备与控制工程四班",
+          label: "过程装备与控制工程四班"
+        },
+        {
+          value: "过程装备与控制工程五班",
+          label: "过程装备与控制工程五班"
+        },
+        {
+          value: "过程装备与控制工程六班",
+          label: "过程装备与控制工程六班"
+        },
+        {
+          value: "过程装备与控制工程七班",
+          label: "过程装备与控制工程七班"
+        },
+        {
+          value: "过程装备与控制工程八班",
+          label: "过程装备与控制工程八班"
+        },
+        {
+          value: "过程装备与控制工程九班",
+          label: "过程装备与控制工程九班"
+        },
+        {
+          value: "过程装备与控制工程十班",
+          label: "过程装备与控制工程十班"
+        },
+        {
+          value: "化学工程与工艺一班",
+          label: "化学工程与工艺一班"
+        },
+        {
+          value: "化学工程与工艺二班",
+          label: "化学工程与工艺二班"
+        },
+        {
+          value: "化学工程与工艺三班",
+          label: "化学工程与工艺三班"
+        },
+        {
+          value: "化学工程与工艺四班",
+          label: "化学工程与工艺四班"
+        },
+        {
+          value: "化学工程与工艺五班",
+          label: "化学工程与工艺五班"
+        },
+        {
+          value: "化学工程与工艺六班",
+          label: "化学工程与工艺六班"
+        },
+        {
+          value: "化学工程与工艺七班",
+          label: "化学工程与工艺七班"
+        },
+        {
+          value: "化学工程与工艺八班",
+          label: "化学工程与工艺八班"
+        },
+        {
+          value: "化学工程与工艺九班",
+          label: "化学工程与工艺九班"
+        },
+        {
+          value: "化学工程与工艺十班",
+          label: "化学工程与工艺十班"
+        }
+      ],
+      // 按阶段选择的选项
+      phaseOptions: [
+        {
+          value: "",
+          label: "请选择"
+        },
+        {
+          value: 0,
+          label: "本科"
+        },
+        {
+          value: 1,
+          label: "硕士"
+        },
+        {
+          value: 2,
+          label: "博士"
+        }
+      ],
+      // 按企业性质选择的选项
+      enterpriseOptions: [
+        {
+          value: "",
+          label: "请选择"
+        },
+        {
+          value: "国有企业",
+          label: "国有企业"
+        },
+        {
+          value: "民营企业",
+          label: "民营企业"
+        },
+        {
+          value: "三资企业",
+          label: "三资企业"
+        },
+        {
+          value: "私营企业",
+          label: "私营企业"
+        },
+        {
+          value: "个体独资企业",
+          label: "个体独资企业"
+        },
+        {
+          value: "其他",
+          label: "其他"
+        }
+      ],
+
       // 修改后的数据
       dataForm: {
         id: 0, // 比修改前的数据多的一个字段，审核项的id

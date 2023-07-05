@@ -57,6 +57,15 @@
                 >登录</el-button
               >
             </el-form-item>
+            <el-alert
+              title="温馨提示："
+              type="primary"
+              :closable="false">
+              <div>
+                <p class="el-alert__description">若无法登录或页面有误，可尝试刷新后重试</p>
+                <p class="el-alert__description">若忘记密码，请联系管理员</p>
+              </div>
+            </el-alert>
           </el-form>
         </div>
       </div>

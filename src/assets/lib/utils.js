@@ -129,9 +129,10 @@ export function exDegree (degree) {
 // 时间转化
 export function convertToDate (excelTimestamp) {
   const excelBaseDate = new Date(1900, 0, 1) // Excel 的基准日期
-  const date = new Date(excelBaseDate.getTime() + (excelTimestamp - 1) * 24 * 60 * 60 * 1000)
+  const date = new Date(excelBaseDate.getTime() + (excelTimestamp - 1) * 24 * 60 * 60 * 1000) // 这里new了一个Date对象
   return date
 }
+
 // export function convertToDate (dateString) {
 //   const parts = dateString.split('.')
 //   if (parts.length === 3) {

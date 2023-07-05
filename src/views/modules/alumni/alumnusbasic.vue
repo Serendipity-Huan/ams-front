@@ -34,8 +34,10 @@
       </el-row>
 
       <el-form-item class="top-margin">
-        <el-button @click="conditionQuery()" type="success" >查询</el-button>
-        <el-button style="margin-left: 50px" v-if="isAuth('ams:alumnusbasic:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
+        <el-button @click="conditionQuery()" type="success" icon="el-icon-search">查询</el-button>
+        <!-- <el-button style="margin-left: 20px" @click="addOrUpdateHandle()" type="primary" icon="el-icon-plus">新增</el-button> -->
+        <el-button style="margin-left: 20px" type="warning" @click="resetPasswordHandle()" :disabled="dataListSelections.length <= 0" icon="el-icon-refresh-left">重置密码</el-button>
+        <el-button style="margin-left: 1200px" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0" icon="el-icon-delete">彻底删除！</el-button>
       </el-form-item>
     </el-form>
     <div class="buttonBox">
@@ -43,6 +45,16 @@
               action: 必填参数，上传的地址
               :auto-upload: 在选取文件后立即进行上传
               :show-file-list: 是否显示已上传文件列表-->
+      <el-alert
+      title="温馨提示："
+      type="warning"
+      :closable="false">
+        <div>
+          <p class="el-alert__description">导入时，请先点击“通过excel导入”，待下方表格读取数据完毕后，再点击“确定导入到数据库”</p>
+          <p class="el-alert__description">如果数据显示不正确，可能是网络原因，请耐心等待或刷新重试</p>
+        </div>
+      </el-alert>
+      <br>
       <el-upload
         action
         accept=".xlsx, .xls"
@@ -50,9 +62,9 @@
         :show-file-list="false"
         :on-change="handle"
       >
-        <el-button type="primary" slot="trigger">选取上传EXCEL文件</el-button>
-        <el-button style="margin-left: 20px" type="success" @click="submit">采集上传文件</el-button>
-        <el-button style="margin-left: 20px" type="danger" @click="exports">导出EXCEL文件</el-button>
+        <el-button type="success" slot="trigger" icon="el-icon-upload2">通过excel导入</el-button>
+        <el-button style="margin-left: 20px" type="primary" @click="submit" icon="el-icon-circle-plus-outline">全部导入到数据库（无需勾选）</el-button>
+        <el-button style="margin-left: 200px" type="warning" @click="exports" icon="el-icon-download">将勾选数据导出为excel</el-button>
       </el-upload>
     </div>
     <el-table
@@ -70,7 +82,7 @@
         prop="id"
         header-align="center"
         align="center"
-        label="id">
+        label="系统id">
       </el-table-column>
       <el-table-column
         prop="aluName"
@@ -134,14 +146,14 @@
         header-align="center"
         align="center"
         label="入学时间"
-        :formatter="formatAdmissionTime">
+        :formatter="formatTime">
       </el-table-column>
       <el-table-column
         prop="graduationTime"
         header-align="center"
         align="center"
         label="毕业时间"
-        :formatter="formatGraduationTime">
+        :formatter="formatTime">
       </el-table-column>
       <el-table-column
         prop="major"
@@ -195,6 +207,20 @@
         label="备注">
       </el-table-column>
       <el-table-column
+        prop="createTime"
+        header-align="center"
+        align="center"
+        label="创建时间"
+      >
+      </el-table-column>
+      <el-table-column
+        prop="updateTime"
+        header-align="center"
+        align="center"
+        label="更新时间"
+      >
+      </el-table-column>
+      <el-table-column
         fixed="right"
         header-align="center"
         align="center"
@@ -216,7 +242,7 @@
       layout="total, sizes, prev, pager, next, jumper">
     </el-pagination>
     <!-- 弹窗, 新增 / 修改 -->
-    <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
+    <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="conditionQuery"></add-or-update>
   </div>
 </template>
 
@@ -333,20 +359,11 @@ export default {
   },
   methods: {
     // 前端展示date数据格式
-    formatAdmissionTime (row) {
-      if (typeof row.admissionTime === 'string') {
-        return row.admissionTime // 字符串类型的日期，直接返回
-      } else if (row.admissionTime instanceof Date) {
-        return formatDate(row.admissionTime) // Date 类型的日期，调用 formatDate 方法进行格式化
-      } else {
-        return '' // 其他类型的数据，返回空字符串或自定义默认值
-      }
-    },
-    formatGraduationTime (row) {
-      if (typeof row.graduationTime === 'string') {
-        return row.graduationTime // 字符串类型的日期，直接返回
-      } else if (row.graduationTime instanceof Date) {
-        return formatDate(row.graduationTime) // Date 类型的日期，调用 formatDate 方法进行格式化
+    formatTime (row, column, cellValue, index) {
+      if (typeof cellValue === 'string') {
+        return cellValue // 字符串类型的日期，直接返回
+      } else if (cellValue instanceof Date) {
+        return formatDate(cellValue) // Date 类型的日期，调用 formatDate 方法进行格式化
       } else {
         return '' // 其他类型的数据，返回空字符串或自定义默认值
       }
@@ -391,9 +408,9 @@ export default {
         if (obj.graduationTime !== ' ') {
           obj.graduationTime = convertToDate(obj.graduationTime)
         }
-        console.log(obj.degreeStage)
+        console.info('degreeStage: ', obj.degreeStage)
         obj.degreeStage = exDegree(obj.degreeStage)
-        console.log(obj.degreeStage)
+        console.info('degreeStage: ', obj.degreeStage)
         arr.push(obj)
       })
       await delay(300)
@@ -416,17 +433,18 @@ export default {
           message: '已上传完毕！',
           type: 'success',
           showClose:
-          this.getDataList()
+          this.conditionQuery()
         })
       }
       let n = 0
       let send = async () => {
         if (n > this.tempData.length - 1) return
-        let boby = this.tempData[n]
+        let body = this.tempData[n]
+        console.info("body: ", body)
         this.$http({
-          url: this.$http.adornUrl('/basic/alumnusbasic/inport'),
+          url: this.$http.adornUrl('/sys/feign/inport'),
           method: 'post',
-          data: this.$http.adornData(boby, false)
+          data: this.$http.adornData(body, false)
         }).then(({data}) => {
           if (data && data.code === 0) {
             complate()
@@ -452,22 +470,22 @@ export default {
       })
       let arr = this.dataListSelections.map(item => {
         return {
-          编号: item.id,
+          // 编号: item.id,
           姓名: item.aluName,
           学号: item.aluId,
-          性别: item.gender === 0 ? '女' : '男',
+          性别: item.gender === 0 ? '男' : '女',
           身份证号: item.idCard,
           民族: item.nationality,
           政治面貌: item.politicalStatus,
           籍贯: item.nativePlace,
           班级: item.clazz,
-          入学时间: item.admissionTime,
-          毕业时间: item.graduationTime,
+          入学时间: this.formatExportDate(item.admissionTime), // 把yyyy-mm-dd转换为yyyy/m/d格式
+          毕业时间: this.formatExportDate(item.graduationTime), // 把yyyy-mm-dd转换为yyyy/m/d格式
           专业: item.major,
-          阶段: item.degreeStage === 0 ? '本科' : item.degreeStage === 1 ? '研究生' : '博士',
+          '阶段（本科or硕士\nor博士）': item.degreeStage === 0 ? '本科' : item.degreeStage === 1 ? '硕士' : '博士',
           手机: item.phoneNum,
           所在城市: item.city,
-          工作单位: item.politicalStatus,
+          工作单位: item.workUnit,
           担任职务: item.jobTitle,
           企业性质: item.enterpriseProperty,
           邮箱: item.email,
@@ -477,21 +495,31 @@ export default {
       let sheet = xlsx.utils.json_to_sheet(arr)
       let book = xlsx.utils.book_new()
       xlsx.utils.book_append_sheet(book, sheet, 'sheet1')
-      let fileName = `user${new Date().getTime()}.xls`
+      let fileName = `user${new Date().getTime()}.xlsx`
 
-// 将文件保存到本地
+      // 将文件保存到本地
       xlsx.writeFile(book, fileName)
 
       loading.close()
     },
 
-      // 多条件查询
+        
+    // 将导出excel的日期格式从yyyy-mm-dd转换为yyyy/m/d，注意该函数的输入输出都是字符串
+    formatExportDate(dateString) {
+      var date = new Date(dateString);
+      var year = date.getFullYear();
+      var month = date.getMonth() + 1;
+      var day = date.getDate();
+      return year + '/' + month + '/' + day;
+    },
+
+    // 多条件查询
     conditionQuery () {
       console.log(this.dataForm.graduationTime)
       this.dataForm.page = this.pageIndex
       this.dataForm.limit = this.pageSize
       this.$http({
-        url: this.$http.adornUrl('/basic/alumnusbasic/alumniData'),
+        url: this.$http.adornUrl('/sys/feign/alumniData'),
         method: 'post',
         data: this.$http.adornData(this.dataForm, false)
       }).then(({data}) => {
@@ -504,26 +532,26 @@ export default {
         }
       })
     },
-      // 获取数据列表
-    getDataList () {
-      this.$http({
-        url: this.$http.adornUrl('/basic/alumnusbasic/list'),
-        method: 'get',
-        params: this.$http.adornParams({
-          'page': this.pageIndex,
-          'limit': this.pageSize
-            // 'key': this.dataForm.key
-        })
-      }).then(({data}) => {
-        if (data && data.code === 0) {
-          this.dataList = data.page.list
-          this.totalPage = data.page.totalCount
-        } else {
-          this.dataList = []
-          this.totalPage = 0
-        }
-      })
-    },
+    // 获取数据列表
+    // getDataList () {
+    //   this.$http({
+    //     url: this.$http.adornUrl('/basic/alumnusbasic/list'),
+    //     method: 'get',
+    //     params: this.$http.adornParams({
+    //       'page': this.pageIndex,
+    //       'limit': this.pageSize
+    //         // 'key': this.dataForm.key
+    //     })
+    //   }).then(({data}) => {
+    //     if (data && data.code === 0) {
+    //       this.dataList = data.page.list
+    //       this.totalPage = data.page.totalCount
+    //     } else {
+    //       this.dataList = []
+    //       this.totalPage = 0
+    //     }
+    //   })
+    // },
       // 每页数
     sizeChangeHandle (val) {
       this.pageSize = val
@@ -546,7 +574,36 @@ export default {
         this.$refs.addOrUpdate.init(data)
       })
     },
-      // 删除
+    resetPasswordHandle () {
+      var ids = this.dataListSelections.map(item => {
+        return item.id
+      })
+      this.$confirm(`确定对[id=${ids.join(',')}]进行[重置密码]操作?`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$http({
+          url: this.$http.adornUrl('/sys/feign/reset-alumnus-password'),
+          method: 'post',
+          data: this.$http.adornData({'ids': ids})
+        }).then(({data}) => {
+          if (data && data.code === 0) {
+            this.$message({
+              message: '操作成功',
+              type: 'success',
+              duration: 1500,
+              onClose: () => {
+                this.conditionQuery()
+              }
+            })
+          } else {
+            this.$message.error(data.msg)
+          }
+        })
+      })
+    },
+    // 删除
     deleteHandle (id) {
       var ids = id ? [id] : this.dataListSelections.map(item => {
         return item.id
@@ -557,9 +614,9 @@ export default {
         type: 'warning'
       }).then(() => {
         this.$http({
-          url: this.$http.adornUrl('/basic/alumnusbasic/delete'),
+          url: this.$http.adornUrl('/sys/feign/delete-alumnus'),
           method: 'post',
-          data: this.$http.adornData(ids, false)
+          data: this.$http.adornData({'ids': ids})
         }).then(({data}) => {
           if (data && data.code === 0) {
             this.$message({
@@ -567,7 +624,7 @@ export default {
               type: 'success',
               duration: 1500,
               onClose: () => {
-                this.getDataList()
+                this.conditionQuery()
               }
             })
           } else {

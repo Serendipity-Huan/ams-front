@@ -1,5 +1,6 @@
 <template>
-  <el-dialog
+  <div>该页面废弃</div>
+  <!-- <el-dialog
     :title="!dataForm.id ? '新增' : '修改'"
     :close-on-click-modal="false"
     :visible.sync="visible">
@@ -81,7 +82,7 @@
       <el-button @click="visible = false">取消</el-button>
       <el-button type="primary" @click="dataFormSubmit()">确定</el-button>
     </span>
-  </el-dialog>
+  </el-dialog> -->
 </template>
 
 <script>

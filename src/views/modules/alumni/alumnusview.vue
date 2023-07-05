@@ -1,10 +1,10 @@
 <template>
   <div class="mod-demo-echarts">
-    <el-alert
+    <!-- <el-alert
       title="提示："
       type="warning"
       :closable="false">
-    </el-alert>
+    </el-alert> -->
     <el-row :gutter="20">
       <el-col :span="12">
         <el-card>
@@ -89,7 +89,7 @@ export default {
   methods: {
     getMajor () {
       this.$http({
-        url: this.$http.adornUrl('/basic/alumnusbasic/major'),
+        url: this.$http.adornUrl('/sys/feign/major'),
         method: 'get'
       }).then(({ data }) => {
         this.major = data.majorVo
@@ -98,7 +98,7 @@ export default {
     },
     getCity () {
       this.$http({
-        url: this.$http.adornUrl('/basic/alumnusbasic/city'),
+        url: this.$http.adornUrl('/sys/feign/city'),
         method: 'get'
       }).then(({ data }) => {
         this.city = data.cityVO
@@ -107,7 +107,7 @@ export default {
     },
     getGraduation () {
       this.$http({
-        url: this.$http.adornUrl('/basic/alumnusbasic/graduation'),
+        url: this.$http.adornUrl('/sys/feign/graduation'),
         method: 'get'
       }).then(({ data }) => {
         this.graduation = data.graduationVO
@@ -116,7 +116,7 @@ export default {
     },
     getNationality () {
       this.$http({
-        url: this.$http.adornUrl('/basic/alumnusbasic/nationality'),
+        url: this.$http.adornUrl('/sys/feign/nationality'),
         method: 'get'
       }).then(({ data }) => {
         this.nationality = data.nationalityVO
@@ -125,7 +125,7 @@ export default {
     },
     getDegreeStage () {
       this.$http({
-        url: this.$http.adornUrl('/basic/alumnusbasic/degreeStage'),
+        url: this.$http.adornUrl('/sys/feign/degreeStage'),
         method: 'get'
       }).then(({ data }) => {
         this.degreeStage = data.degreeStageVO
@@ -134,7 +134,7 @@ export default {
     },
     getNativePlace () {
       this.$http({
-        url: this.$http.adornUrl('/basic/alumnusbasic/nativePlace'),
+        url: this.$http.adornUrl('/sys/feign/nativePlace'),
         method: 'get'
       }).then(({ data }) => {
         this.nativePlace = data.nativePlaceVO
@@ -143,7 +143,7 @@ export default {
     },
     getEnterprise () {
       this.$http({
-        url: this.$http.adornUrl('/basic/alumnusbasic/enterpriseChart'),
+        url: this.$http.adornUrl('/sys/feign/enterpriseChart'),
         method: 'get'
       }).then(({ data }) => {
         if (data && data.code === 0) {
