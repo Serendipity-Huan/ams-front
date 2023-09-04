@@ -229,7 +229,7 @@
       @size-change="sizeChangeHandle"
       @current-change="currentChangeHandle"
       :current-page="pageIndex"
-      :page-sizes="[10, 20, 50, 100, 500]"
+      :page-sizes="[10, 20, 50, 100, 500,totalPage]"
       :page-size="pageSize"
       :total="totalPage"
       layout="total, sizes, prev, pager, next, jumper">
@@ -1524,14 +1524,14 @@ export default {
 
       loading.close()
     },
-    
+
     // 将导出excel的日期格式从yyyy-mm-dd转换为yyyy/m/d，注意该函数的输入输出都是字符串
-    formatExportDate(dateString) {
-      var date = new Date(dateString);
-      var year = date.getFullYear();
-      var month = date.getMonth() + 1;
-      var day = date.getDate();
-      return year + '/' + month + '/' + day;
+    formatExportDate (dateString) {
+      var date = new Date(dateString)
+      var year = date.getFullYear()
+      var month = date.getMonth() + 1
+      var day = date.getDate()
+      return year + '/' + month + '/' + day
     },
 
     concatenateNativePlace (nativePlace) {

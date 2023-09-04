@@ -65,6 +65,7 @@
         <el-button type="success" slot="trigger" icon="el-icon-upload2">通过excel导入</el-button>
         <el-button style="margin-left: 20px" type="primary" @click="submit" icon="el-icon-circle-plus-outline">全部导入到数据库（无需勾选）</el-button>
         <el-button style="margin-left: 200px" type="warning" @click="exports" icon="el-icon-download">将勾选数据导出为excel</el-button>
+        <el-button style="margin-left: 200px" type="primary" @click="downLoad" icon="el-icon-download">下载excel导入模板</el-button>
       </el-upload>
     </div>
     <el-table
@@ -373,7 +374,7 @@ export default {
       let file = e.raw
       if (!file) return
       let loading = Loading.service({
-        text: '小主，请您稍等片刻，女家正在玩命处理中...',
+        text: '正在上传中，请稍后...',
         background: 'rgba(0,0,0,.5)'
       })
       await delay(300)
@@ -440,7 +441,7 @@ export default {
       let send = async () => {
         if (n > this.tempData.length - 1) return
         let body = this.tempData[n]
-        console.info("body: ", body)
+        console.info('body: ', body)
         this.$http({
           url: this.$http.adornUrl('/sys/feign/inport'),
           method: 'post',
@@ -473,7 +474,7 @@ export default {
           // 编号: item.id,
           姓名: item.aluName,
           学号: item.aluId,
-          性别: item.gender === 0 ? '男' : '女',
+          性别: item.gender === 0 ? '男' : item.gender === 1 ? '女' : '未填写',
           身份证号: item.idCard,
           民族: item.nationality,
           政治面貌: item.politicalStatus,
@@ -482,7 +483,7 @@ export default {
           入学时间: this.formatExportDate(item.admissionTime), // 把yyyy-mm-dd转换为yyyy/m/d格式
           毕业时间: this.formatExportDate(item.graduationTime), // 把yyyy-mm-dd转换为yyyy/m/d格式
           专业: item.major,
-          '阶段（本科or硕士\nor博士）': item.degreeStage === 0 ? '本科' : item.degreeStage === 1 ? '硕士' : '博士',
+          '阶段（本科or硕士\nor博士）': item.degreeStage === 0 ? '本科' : item.degreeStage === 1 ? '硕士' : item.degreeStage === 2 ? '博士' : '未填写',
           手机: item.phoneNum,
           所在城市: item.city,
           工作单位: item.workUnit,
@@ -503,14 +504,52 @@ export default {
       loading.close()
     },
 
-        
+    // 下载excel模板
+    downLoad () {
+      let headers = [
+        '姓名',
+        '学号',
+        '性别',
+        '身份证号',
+        '民族',
+        '政治面貌',
+        '籍贯',
+        '班级',
+        '入学时间',
+        '毕业时间',
+        '专业',
+        '阶段（本科or硕士or博士）',
+        '手机',
+        '所在城市',
+        '工作单位',
+        '担任职务',
+        '企业性质',
+        '邮箱',
+        '备注'
+      ]
+
+      // 创建一个包含表头的空数组
+      let arr = [headers]
+
+      let sheet = xlsx.utils.aoa_to_sheet(arr)
+      let book = xlsx.utils.book_new()
+      xlsx.utils.book_append_sheet(book, sheet, 'sheet1')
+      let fileName = `template${new Date().getTime()}.xlsx`
+
+      // 将文件保存到本地
+      xlsx.writeFile(book, fileName)
+    },
+
     // 将导出excel的日期格式从yyyy-mm-dd转换为yyyy/m/d，注意该函数的输入输出都是字符串
-    formatExportDate(dateString) {
-      var date = new Date(dateString);
-      var year = date.getFullYear();
-      var month = date.getMonth() + 1;
-      var day = date.getDate();
-      return year + '/' + month + '/' + day;
+    formatExportDate (dateString) {
+      if (dateString === ' ') {
+        return ' '
+      }
+      var date = new Date(dateString)
+      var year = date.getFullYear()
+      var month = date.getMonth() + 1
+      var day = date.getDate()
+      return year + '/' + month + '/' + day
     },
 
     // 多条件查询

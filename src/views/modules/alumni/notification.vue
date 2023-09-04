@@ -92,6 +92,9 @@
         header-align="center"
         align="center"
         label="性别">
+        <template slot-scope="scope">
+          {{ scope.row.gender === 0 ? '男' : '女' }}
+        </template>
       </el-table-column>
       <el-table-column
         prop="idCard"
@@ -222,8 +225,9 @@ export default {
         gender: '',
         city: '',
         idCard: '',
-        clazz: ''
-
+        clazz: '',
+        page: '',
+        limit: ''
       },
       // 初始时，“不可发送”为false，即可发送，这个变量用于防止短时间重复点击发送
       unsendable: false,
@@ -320,6 +324,9 @@ export default {
   methods: {
     // 多条件查询
     conditionQuery () {
+      console.log(this.dataForm.graduationTime)
+      this.dataForm.page = this.pageIndex
+      this.dataForm.limit = this.pageSize
       this.$http({
         url: this.$http.adornUrl('/sys/feign/alumniData'),
         method: 'post',

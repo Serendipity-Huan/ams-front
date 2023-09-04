@@ -608,7 +608,7 @@ export default {
         } else if (item.degreeStage === 1) {
           degreeStageName = '硕士研究生'
         } else if (item.degreeStage === 2) {
-          degreeStageName = '鄙视研究生'
+          degreeStageName = '博士研究生'
         }
         const percent = ((item.count / total) * 100).toFixed(2)
         return {

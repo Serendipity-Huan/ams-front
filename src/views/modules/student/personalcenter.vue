@@ -38,7 +38,7 @@
         label="性别"
       >
         <template slot-scope="scope">
-          {{ scope.row.gender === 0 ? "男" : "女" }}
+          {{ scope.row.gender === 0 ? "男" : scope.row.degreeStage === 1 ? "女": "未填写"  }}
         </template>
       </el-table-column>
       <el-table-column
