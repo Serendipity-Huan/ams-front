@@ -63,9 +63,9 @@
         :on-change="handle"
       >
         <el-button type="success" slot="trigger" icon="el-icon-upload2">通过excel导入</el-button>
-        <el-button style="margin-left: 20px" type="primary" @click="submit" icon="el-icon-circle-plus-outline">全部导入到数据库（无需勾选）</el-button>
-        <el-button style="margin-left: 200px" type="warning" @click="exports" icon="el-icon-download">将勾选数据导出为excel</el-button>
-        <el-button style="margin-left: 200px" type="primary" @click="downLoad" icon="el-icon-download">下载excel导入模板</el-button>
+        <el-button style="margin-left: 10px" type="primary" @click="downLoad" icon="el-icon-download">下载excel导入模板</el-button>
+        <el-button type="primary" @click="submit" icon="el-icon-circle-plus-outline">全部导入到数据库（无需勾选）</el-button>
+        <el-button type="warning" @click="exports" icon="el-icon-download">将勾选数据导出为excel</el-button>
       </el-upload>
     </div>
     <el-table
@@ -387,32 +387,32 @@ export default {
       let arr = []
       let oldData = JSON.parse(window.localStorage.getItem('excel') || '[]')
       let index = oldData.length
-      list.forEach(item => {
-        let obj = {}
-        for (let key in character) {
-          if (!character.hasOwnProperty(key)) break
-          let v = character[key],
-            text = v.text,
-            type = v.type
-          v = item[text] || ''
-          type === 'string' ? (v = String(v)) : null
-          type === 'number' ? (v = Number(v)) : null
-          obj[key] = v
+      list.forEach((item, index) => {
+        if (index >= 1) { // 从第二行开始遍历（index从0开始计数）
+          let obj = {}
+          for (let key in character) {
+            if (!character.hasOwnProperty(key)) break
+            let v = character[key],
+              text = v.text,
+              type = v.type
+            v = item[text] || ''
+            type === 'string' ? (v = String(v)) : null
+            type === 'number' ? (v = Number(v)) : null
+            obj[key] = v
+          }
+          obj.id = index
+          if (obj.gender !== '') {
+            obj.gender = exGender(obj.gender)
+          }
+          if (obj.admissionTime !== ' ') {
+            obj.admissionTime = convertToDate(obj.admissionTime)
+          }
+          if (obj.graduationTime !== ' ') {
+            obj.graduationTime = convertToDate(obj.graduationTime)
+          }
+          obj.degreeStage = exDegree(obj.degreeStage)
+          arr.push(obj)
         }
-        obj.id = ++index
-        if (obj.gender !== '') {
-          obj.gender = exGender(obj.gender)
-        }
-        if (obj.admissionTime !== ' ') {
-          obj.admissionTime = convertToDate(obj.admissionTime)
-        }
-        if (obj.graduationTime !== ' ') {
-          obj.graduationTime = convertToDate(obj.graduationTime)
-        }
-        console.info('degreeStage: ', obj.degreeStage)
-        obj.degreeStage = exDegree(obj.degreeStage)
-        console.info('degreeStage: ', obj.degreeStage)
-        arr.push(obj)
       })
       await delay(300)
       // 展示到页面中
@@ -441,17 +441,51 @@ export default {
       let send = async () => {
         if (n > this.tempData.length - 1) return
         let body = this.tempData[n]
-        console.info('body: ', body)
         this.$http({
-          url: this.$http.adornUrl('/sys/feign/inport'),
+          url: this.$http.adornUrl('/sys/feign/selectById'),
           method: 'post',
           data: this.$http.adornData(body, false)
         }).then(({data}) => {
-          if (data && data.code === 0) {
-            complate()
-            n++
+          console.info(data.exist)
+          if (data.exist === 0) {
+            this.$http({
+              url: this.$http.adornUrl('/sys/feign/inport'),
+              method: 'post',
+              data: this.$http.adornData(body, false)
+            }).then(({data}) => {
+              if (data && data.code === 0) {
+                complate()
+                n++
+              }
+              send()
+            })
           }
-          send()
+          if (data.exist === 1) {
+            this.$confirm(`数据库已有相同学号，是否覆盖？`, '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning'
+            }).then(() => {
+              this.$http({
+                url: this.$http.adornUrl('/sys/feign/cover'),
+                method: 'post',
+                data: this.$http.adornData(body, false)
+              }).then(({data}) => {
+                if (data && data.code === 0) {
+                  this.$message({
+                    message: '操作成功',
+                    type: 'success',
+                    duration: 1500,
+                    onClose: () => {
+                      this.conditionQuery()
+                    }
+                  })
+                } else {
+                  this.$message.error(data.msg)
+                }
+              })
+            })
+          }
         })
       }
       send()
@@ -483,7 +517,7 @@ export default {
           入学时间: this.formatExportDate(item.admissionTime), // 把yyyy-mm-dd转换为yyyy/m/d格式
           毕业时间: this.formatExportDate(item.graduationTime), // 把yyyy-mm-dd转换为yyyy/m/d格式
           专业: item.major,
-          '阶段（本科or硕士\nor博士）': item.degreeStage === 0 ? '本科' : item.degreeStage === 1 ? '硕士' : item.degreeStage === 2 ? '博士' : '未填写',
+          '阶段': item.degreeStage === 0 ? '本科' : item.degreeStage === 1 ? '硕士' : item.degreeStage === 2 ? '博士' : '未填写',
           手机: item.phoneNum,
           所在城市: item.city,
           工作单位: item.workUnit,
@@ -518,7 +552,7 @@ export default {
         '入学时间',
         '毕业时间',
         '专业',
-        '阶段（本科or硕士or博士）',
+        '阶段',
         '手机',
         '所在城市',
         '工作单位',
@@ -530,6 +564,30 @@ export default {
 
       // 创建一个包含表头的空数组
       let arr = [headers]
+
+      // 添加表头的说明信息
+      let headerDescriptions = [
+        'xxx',
+        'xxx',
+        '男/女',
+        'xxx',
+        'xx族',
+        '群众、共青团员、预备党员、中共党员',
+        'xx省xx市',
+        'xxx',
+        'xxxx/xx/xx',
+        'xxxx/xx/xx',
+        'xxx',
+        '本科/硕士/博士',
+        'xxxx',
+        'xx省xx市',
+        '工作单位说明',
+        '担任职务说明',
+        '国有企业/民营企业/个体独资企业/三资企业/私营企业',
+        '邮箱说明',
+        '备注说明'
+      ]
+      arr.push(headerDescriptions)
 
       let sheet = xlsx.utils.aoa_to_sheet(arr)
       let book = xlsx.utils.book_new()
