@@ -56,8 +56,7 @@ export let character = {
     type: 'string'
   },
   degreeStage: {
-    text: '阶段（本科or硕士\n' +
-      'or博士）',
+    text: '阶段',
     type: 'string'
   },
   phoneNum: {
