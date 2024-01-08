@@ -125,14 +125,14 @@ router.beforeEach((to, from, next) => {
       router.options.isAddDynamicMenuRoutes = true
       sessionStorage.setItem('menuList', JSON.stringify(alumniMenuList || '[]'))
     }
-    console.info('to: ', to)
-    console.info('router.options.isAddDynamicMenuRoutes: ', router.options.isAddDynamicMenuRoutes)
-    console.info('fnCurrentRouteType(to, globalRoutes) === global: ', fnCurrentRouteType(to, globalRoutes) === 'global')
+    // console.info('to: ', to)
+    // console.info('router.options.isAddDynamicMenuRoutes: ', router.options.isAddDynamicMenuRoutes)
+    // console.info('fnCurrentRouteType(to, globalRoutes) === global: ', fnCurrentRouteType(to, globalRoutes) === 'global')
     next()
   } else { // rjl: 管理员第一次登录时进这个流程，后续都不用进(因为isAddDynamicMenuRoutes被置为true)
-    console.info('router.options.isAddDynamicMenuRoutes: ', router.options.isAddDynamicMenuRoutes)
-    console.info('fnCurrentRouteType(to, globalRoutes) === global: ', fnCurrentRouteType(to, globalRoutes) === 'global')
-    console.info('nav在干什么')
+    // console.info('router.options.isAddDynamicMenuRoutes: ', router.options.isAddDynamicMenuRoutes)
+    // console.info('fnCurrentRouteType(to, globalRoutes) === global: ', fnCurrentRouteType(to, globalRoutes) === 'global')
+    // console.info('nav在干什么')
     http({
       url: http.adornUrl('/sys/menu/nav'),
       method: 'get',
@@ -141,8 +141,8 @@ router.beforeEach((to, from, next) => {
       if (data && data.code === 0) {
         fnAddDynamicMenuRoutes(data.menuList)
         router.options.isAddDynamicMenuRoutes = true
-        console.info('menuList:', data.menuList)
-        console.info('permissions:', data.permissions)
+        // console.info('menuList:', data.menuList)
+        // console.info('permissions:', data.permissions)
         sessionStorage.setItem('menuList', JSON.stringify(data.menuList || '[]'))
         sessionStorage.setItem('permissions', JSON.stringify(data.permissions || '[]'))
         next({ ...to, replace: true })
@@ -222,7 +222,7 @@ function fnAddDynamicMenuRoutes (menuList = [], routes = [], isMainRoutes = true
         { path: '*', redirect: { name: '404' } }
       ])
       sessionStorage.setItem('dynamicMenuRoutes', JSON.stringify(mainRoutes.children || '[]'))
-      console.info('dynamicMenuRoutes', JSON.stringify(mainRoutes.children || '[]'))
+      // console.info('dynamicMenuRoutes', JSON.stringify(mainRoutes.children || '[]'))
       console.log('\n')
       console.log('%c!<-------------------- 动态(菜单)路由 s -------------------->', 'color:blue')
       console.log('mainRoutes.children: ', mainRoutes.children)
@@ -235,7 +235,7 @@ function fnAddDynamicMenuRoutes (menuList = [], routes = [], isMainRoutes = true
         { path: '*', redirect: { name: '404' } }
       ])
       sessionStorage.setItem('dynamicMenuRoutes', JSON.stringify(globalRoutes[2].children || '[]'))
-      console.info('dynamicMenuRoutes', JSON.stringify(globalRoutes[2].children || '[]'))
+      // console.info('dynamicMenuRoutes', JSON.stringify(globalRoutes[2].children || '[]'))
       console.log('\n')
       console.log('%c!<-------------------- 动态(菜单)路由 s -------------------->', 'color:blue')
       console.log('globalRoutes[2].children: ', globalRoutes[2].children)
