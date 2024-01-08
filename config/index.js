@@ -20,6 +20,10 @@ module.exports = {
           '^/proxyApi': '/'
         }
       }
+      // '/api': {
+      //   target: 'http://202.115.43.57:9000',
+      //   changeOrigin: true
+      // }
     },
 
     // Various Dev Server settings
