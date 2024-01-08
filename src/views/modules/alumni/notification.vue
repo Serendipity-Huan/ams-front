@@ -76,6 +76,19 @@
         label="id">
       </el-table-column>
       <el-table-column
+        prop="aluStatus"
+        header-align="center"
+        align="center"
+        label="状态">
+        <template slot-scope="scope">
+          <div>
+            <el-tag size="medium" :type="showAluStatus[scope.row.aluStatus]">{{
+              scope.row.aluStatus == 1 ? "正常" : "禁用中"
+            }}</el-tag>
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column
         prop="aluName"
         header-align="center"
         align="center"
@@ -227,8 +240,9 @@ export default {
         idCard: '',
         clazz: '',
         page: '',
-        limit: ''
+        limit: '',
       },
+      showAluStatus: ["danger", "success"],
       // 初始时，“不可发送”为false，即可发送，这个变量用于防止短时间重复点击发送
       unsendable: false,
       // 按性别选择的选项

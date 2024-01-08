@@ -18,6 +18,19 @@
       >
       </el-table-column>
       <el-table-column
+        prop="aluStatus"
+        header-align="center"
+        align="center"
+        label="状态">
+        <template slot-scope="scope">
+          <div>
+            <el-tag size="medium" :type="showAluStatus[scope.row.aluStatus]">{{
+              scope.row.aluStatus == 1 ? "正常" : "禁用中"
+            }}</el-tag>
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column
         prop="aluName"
         header-align="center"
         align="center"
@@ -38,7 +51,7 @@
         label="性别"
       >
         <template slot-scope="scope">
-          {{ scope.row.gender === 0 ? "男" : scope.row.degreeStage === 1 ? "女": "未填写"  }}
+          {{ scope.row.gender === 0 ? "男" : scope.row.gender === 1 ? "女": "未填写"  }}
         </template>
       </el-table-column>
       <el-table-column
@@ -343,7 +356,8 @@ export default {
       auditList: [],
       auditListLoading: false,
       checkDetailVisible: false,
-      showStatus: ["", "success", "danger", "warning"]
+      showStatus: ["", "success", "danger", "warning"],
+      showAluStatus: ["danger", "success"],
     };
   },
   components: {

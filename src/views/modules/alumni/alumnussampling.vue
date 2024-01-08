@@ -103,6 +103,19 @@
         label="id">
       </el-table-column>
       <el-table-column
+        prop="aluStatus"
+        header-align="center"
+        align="center"
+        label="状态">
+        <template slot-scope="scope">
+          <div>
+            <el-tag size="medium" :type="showAluStatus[scope.row.aluStatus]">{{
+              scope.row.aluStatus == 1 ? "正常" : "禁用中"
+            }}</el-tag>
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column
         prop="aluName"
         header-align="center"
         align="center"
@@ -265,6 +278,7 @@ export default {
         page: '',
         limit: ''
       },
+      showAluStatus: ["danger", "success"],
       // 按性别选择的选项
       genderOptions: [{
         value: '', label: '请选择'

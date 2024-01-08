@@ -20,14 +20,14 @@
             <el-form-item prop="userName">
               <el-input
                 v-model="dataForm.userName"
-                placeholder="学号"
+                placeholder="学号/账号"
               ></el-input>
             </el-form-item>
             <el-form-item prop="password">
               <el-input
                 v-model="dataForm.password"
-                type="password"
-                placeholder="密码"
+                show-password
+                placeholder="密码 (初始密码为身份证后6位)"
               ></el-input>
             </el-form-item>
             <el-form-item prop="captcha" v-if="dataForm.role == 'admin'">
@@ -63,6 +63,7 @@
               :closable="false">
               <div>
                 <p class="el-alert__description">若无法登录或页面有误，可尝试刷新后重试</p>
+                <p class="el-alert__description">初始密码为身份证号后6位</p>
                 <p class="el-alert__description">若忘记密码，请联系管理员</p>
               </div>
             </el-alert>
@@ -117,8 +118,8 @@ export default {
             }).then(({ data }) => {
               if (data && data.code === 0) {
                 this.$cookie.set('token', 'alumni')
-                let token = this.$cookie.get('token')
-                console.info('设置的token: ', token)
+                // let token = this.$cookie.get('token')
+                // console.info('设置的token: ', token)
                 this.$router.replace({ name: 'alumni-home' })
               } else {
                 this.$message.error(data.msg)

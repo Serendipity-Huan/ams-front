@@ -37,7 +37,7 @@
         <el-button @click="conditionQuery()" type="success" icon="el-icon-search">查询</el-button>
         <!-- <el-button style="margin-left: 20px" @click="addOrUpdateHandle()" type="primary" icon="el-icon-plus">新增</el-button> -->
         <el-button style="margin-left: 20px" type="warning" @click="resetPasswordHandle()" :disabled="dataListSelections.length <= 0" icon="el-icon-refresh-left">重置密码</el-button>
-        <el-button style="margin-left: 1200px" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0" icon="el-icon-delete">彻底删除！</el-button>
+        <el-button style="margin-left: 1200px" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0" icon="el-icon-delete">批量删除</el-button>
       </el-form-item>
     </el-form>
     <div class="buttonBox">
@@ -50,7 +50,7 @@
       type="warning"
       :closable="false">
         <div>
-          <p class="el-alert__description">导入时，请先点击“通过excel导入”，待下方表格读取数据完毕后，再点击“确定导入到数据库”</p>
+          <p class="el-alert__description">导入时，请先点击“读取excel文件”，待下方表格读取数据完毕后，再点击“全部导入到数据库”</p>
           <p class="el-alert__description">如果数据显示不正确，可能是网络原因，请耐心等待或刷新重试</p>
         </div>
       </el-alert>
@@ -62,7 +62,7 @@
         :show-file-list="false"
         :on-change="handle"
       >
-        <el-button type="success" slot="trigger" icon="el-icon-upload2">通过excel导入</el-button>
+        <el-button type="success" slot="trigger" icon="el-icon-upload2">读取excel文件</el-button>
         <el-button style="margin-left: 10px" type="primary" @click="downLoad" icon="el-icon-download">下载excel导入模板</el-button>
         <el-button type="primary" @click="submit" icon="el-icon-circle-plus-outline">全部导入到数据库（无需勾选）</el-button>
         <el-button type="warning" @click="exports" icon="el-icon-download">将勾选数据导出为excel</el-button>
@@ -84,6 +84,19 @@
         header-align="center"
         align="center"
         label="系统id">
+      </el-table-column>
+      <el-table-column
+        prop="aluStatus"
+        header-align="center"
+        align="center"
+        label="状态">
+        <template slot-scope="scope">
+          <div>
+            <el-tag size="medium" :type="showAluStatus[scope.row.aluStatus]">{{
+              scope.row.aluStatus == 1 ? "正常" : "禁用中"
+            }}</el-tag>
+          </div>
+        </template>
       </el-table-column>
       <el-table-column
         prop="aluName"
@@ -229,6 +242,9 @@
         label="操作">
         <template slot-scope="scope">
           <el-button type="text" size="small" @click="addOrUpdateHandle(scope.row)">修改</el-button>
+          <el-button type="text" size="small" @click="disableOrEnableHandle(scope.row.id, scope.row.aluStatus)">
+            {{ scope.row.aluStatus === 1 ? '禁用' : '启用'}}
+          </el-button>
           <el-button type="text" size="small" @click="deleteHandle(scope.row.id)">删除</el-button>
         </template>
       </el-table-column>
@@ -266,6 +282,7 @@ export default {
         page: '',
         limit: ''
       },
+      showAluStatus: ["danger", "success"],
       // 按性别选择的选项
       genderOptions: [{
         value: '', label: '请选择'
@@ -446,7 +463,7 @@ export default {
           method: 'post',
           data: this.$http.adornData(body, false)
         }).then(({data}) => {
-          console.info(data.exist)
+          // console.info(data.exist)
           if (data.exist === 0) {
             this.$http({
               url: this.$http.adornUrl('/sys/feign/inport'),
@@ -738,7 +755,7 @@ export default {
       var ids = id ? [id] : this.dataListSelections.map(item => {
         return item.id
       })
-      this.$confirm(`确定对[id=${ids.join(',')}]进行[${id ? '删除' : '批量删除'}]操作?`, '提示', {
+      this.$confirm(`确定对[id=${ids.join(',')}]进行[${id ? '删除' : '批量删除'}]操作? 【此操作不可撤销】`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -747,6 +764,36 @@ export default {
           url: this.$http.adornUrl('/sys/feign/delete-alumnus'),
           method: 'post',
           data: this.$http.adornData({'ids': ids})
+        }).then(({data}) => {
+          if (data && data.code === 0) {
+            this.$message({
+              message: '操作成功',
+              type: 'success',
+              duration: 1500,
+              onClose: () => {
+                this.conditionQuery()
+              }
+            })
+          } else {
+            this.$message.error(data.msg)
+          }
+        })
+      })
+    },
+    // 禁用或启用
+    disableOrEnableHandle (id, aluStatus) {
+      // var ids = id ? [id] : this.dataListSelections.map(item => {
+      //   return item.id
+      // })
+      this.$confirm(`确定对[id=${id}]进行[${aluStatus == 1 ? '禁用' : '启用'}]操作?`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$http({
+          url: this.$http.adornUrl('/sys/feign/disable-or-enable'),
+          method: 'post',
+          data: this.$http.adornData({'id': id})
         }).then(({data}) => {
           if (data && data.code === 0) {
             this.$message({

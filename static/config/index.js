@@ -5,6 +5,7 @@
   window.SITE_CONFIG = {};
 
   // api接口请求地址
+  // window.SITE_CONFIG['baseUrl'] = '202.115.43.57:31444/api';
   window.SITE_CONFIG['baseUrl'] = 'http://localhost:9000/api';
   // window.SITE_CONFIG['baseUrl'] = 'http://ams.ce.scu.edu.cn/api';
 
