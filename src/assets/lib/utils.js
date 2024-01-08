@@ -56,8 +56,7 @@ export let character = {
     type: 'string'
   },
   degreeStage: {
-    text: '阶段（本科or硕士\n' +
-      'or博士）',
+    text: '阶段',
     type: 'string'
   },
   phoneNum: {
@@ -121,6 +120,8 @@ export function exDegree (degree) {
     degreeValue = 1
   } else if (degree === '博士') {
     degreeValue = 2
+  } else {
+    degreeValue = 0
   }
 
   return degreeValue

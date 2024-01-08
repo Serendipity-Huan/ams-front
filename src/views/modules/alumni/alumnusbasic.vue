@@ -585,16 +585,49 @@ export default {
         '担任职务说明',
         '国有企业/民营企业/个体独资企业/三资企业/私营企业',
         '邮箱说明',
-        '备注说明'
+        '请从下一行开始填写'
       ]
       arr.push(headerDescriptions)
 
       let sheet = xlsx.utils.aoa_to_sheet(arr)
+
+// 设置表头的大小和宽度
+      let headerStyle = {
+        font: { bold: true },
+        alignment: { wrapText: true, horizontal: 'center', vertical: 'center' } // 居中显示
+      }
+
+// 设置列宽和行高
+      sheet['!cols'] = [
+        { width: 15 }, // 设置第一列的宽度为 15
+        { width: 20 } // 设置第二列的宽度为 20
+        // 添加更多列宽设置...
+      ]
+
+// 设置行高
+      sheet['!rows'] = [
+        { hpx: 30 } // 设置第一行的高度为 30
+        // 添加更多行高设置...
+      ]
+
+// 应用样式到表头
+      Object.keys(sheet).forEach(cell => {
+        if (cell[0] === 'A' || cell[1] === '1') { // Assuming header starts from A1
+          sheet[cell].s = headerStyle
+        }
+      })
+
+// 获取“请从下一行开始填写”的单元格坐标
+      let redTextCell = 'S2' // 假设是第三行的第一列
+
+// 设置“请从下一行开始填写”单元格的样式为红色
+      sheet[redTextCell].s = { font: { color: { rgb: 'FF0000FF' } } }
+
       let book = xlsx.utils.book_new()
       xlsx.utils.book_append_sheet(book, sheet, 'sheet1')
       let fileName = `template${new Date().getTime()}.xlsx`
 
-      // 将文件保存到本地
+// 将文件保存到本地
       xlsx.writeFile(book, fileName)
     },
 
